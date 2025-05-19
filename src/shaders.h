@@ -1,6 +1,9 @@
 #ifndef m_SHADER_H
 #define m_SHADER_H
 
+#include "arena_base.h"
+#include "scratch_arena.h"
+
 typedef struct Shader {
     GLuint ID;
 } Shader;
@@ -12,12 +15,12 @@ Shader loadGlShaders(ScratchArena* arena, const char* vertexPath, const char* fr
 #define STRING_BUFFER 512
 
 Shader loadGlShaders(ScratchArena* arena, const char* vertexPath, const char* fragmentPath) {
-    arenaPush(arena);
+    arenaScratchPush(arena);
 
     FILE *vertexFile = fopen(vertexPath, "rb");
     if(!vertexFile) {
         fprintf(stderr, "ERROR: Failed to load vertex file.\n");
-        arenaPop(arena);
+        arenaScratchPop(arena);
         exit(-1);
     }
 
@@ -25,7 +28,7 @@ Shader loadGlShaders(ScratchArena* arena, const char* vertexPath, const char* fr
     long fileSize = ftell(vertexFile);
     rewind(vertexFile);
 
-    char* vertSource = arenaAlloc(arena, fileSize + 1, 1);
+    char* vertSource = arenaScratchAlloc(arena, fileSize + 1, 1);
     fread(vertSource, 1, fileSize, vertexFile);
     vertSource[fileSize] = '\0';
     fclose(vertexFile);
@@ -33,7 +36,7 @@ Shader loadGlShaders(ScratchArena* arena, const char* vertexPath, const char* fr
     FILE *fragmentFile = fopen(fragmentPath, "rb");
     if(!fragmentFile) {
         fprintf(stderr, "ERROR: Failed to load fragment file.\n");
-        arenaPop(arena);
+        arenaScratchPop(arena);
         exit(-1);
     }
    
@@ -41,7 +44,7 @@ Shader loadGlShaders(ScratchArena* arena, const char* vertexPath, const char* fr
     fileSize = ftell(fragmentFile);
     rewind(fragmentFile);
 
-    char* fragSource = arenaAlloc(arena, fileSize + 1, 1);
+    char* fragSource = arenaScratchAlloc(arena, fileSize + 1, 1);
     fread(fragSource, 1, fileSize, fragmentFile);
     fragSource[fileSize] = '\0';
     fclose(fragmentFile);
@@ -85,7 +88,7 @@ Shader loadGlShaders(ScratchArena* arena, const char* vertexPath, const char* fr
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 
-    arenaPop(arena);
+    arenaScratchPop(arena);
 
     return temp;
 }

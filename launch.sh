@@ -56,12 +56,12 @@ fi
 SRC_DIR="src"
 INCLUDE_DIR="include"
 BIN_DIR="bin"
-TARGET="$BIN_DIR/lighting4Ex_rotate"
+TARGET="$BIN_DIR/mainModel"
+INCLUDE_FLAGS="-I/opt/homebrew/include -L/opt/homebrew/lib -Iinclude -Isrc/memory -lglfw -framework Cocoa -framework OpenGL -framework IOKit -DGL_SILENCE_DEPRECATION"
+SRC_MAIN="$SRC_DIR/main.c"
+SRC_SECONDARY="src/zeta.c src/memory/page_arena.c src/memory/scratch_arena.c"
 
-SRC_MAIN="$SRC_DIR/lighting4_rotateLight.c"
-#SRC_SECONDARY="SRC_DIR/..."
-
-clang -std=c99 $LIGHT_DBG_FLAGS -o $TARGET $SRC_MAIN -I/opt/homebrew/include -L/opt/homebrew/lib -Iinclude -lglfw -framework Cocoa -framework OpenGL -framework IOKit -DGL_SILENCE_DEPRECATION
+clang -std=c99 $LIGHT_DBG_FLAGS -o $TARGET $SRC_MAIN $SRC_SECONDARY $INCLUDE_FLAGS
 
 if [ $? -ne 0 ]; then
     echo "[ ] Compilation Failed."
